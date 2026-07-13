@@ -1,0 +1,6 @@
+@PeopeBank.Api_HostAddress = http://localhost:5156
+
+GET {{PeopeBank.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
