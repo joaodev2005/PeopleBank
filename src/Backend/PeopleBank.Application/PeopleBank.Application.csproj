@@ -6,4 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\PeopleBank.Communication\PeopleBank.Communication.csproj" />
+    <ProjectReference Include="..\..\Shared\PeopleBank.Exception\PeopleBank.Exception.csproj" />
+    <ProjectReference Include="..\PeopleBank.Domain\PeopleBank.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
