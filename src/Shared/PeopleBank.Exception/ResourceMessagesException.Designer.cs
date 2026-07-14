@@ -61,6 +61,15 @@ namespace PeopleBank.Exception {
         }
         
         /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Employee already has an account..
+        /// </summary>
+        public static string ACCOUNT_ALREADY_EXISTS {
+            get {
+                return ResourceManager.GetString("ACCOUNT_ALREADY_EXISTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Consulta uma cadeia de caracteres localizada semelhante a  Account not found..
         /// </summary>
         public static string ACCOUNT_NOT_FOUND {
@@ -70,11 +79,29 @@ namespace PeopleBank.Exception {
         }
         
         /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a This company already exists..
+        /// </summary>
+        public static string COMPANY_ALREADY_EXISTS {
+            get {
+                return ResourceManager.GetString("COMPANY_ALREADY_EXISTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Consulta uma cadeia de caracteres localizada semelhante a Company not found..
         /// </summary>
         public static string COMPANY_NOT_FOUND {
             get {
                 return ResourceManager.GetString("COMPANY_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a This cpf already exists.
+        /// </summary>
+        public static string CPF_ALREADY_EXISTS {
+            get {
+                return ResourceManager.GetString("CPF_ALREADY_EXISTS", resourceCulture);
             }
         }
         
@@ -120,6 +147,15 @@ namespace PeopleBank.Exception {
         public static string INVALID_EMAIL {
             get {
                 return ResourceManager.GetString("INVALID_EMAIL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Invalid Pix key type..
+        /// </summary>
+        public static string INVALID_PIX_KEY_TYPE {
+            get {
+                return ResourceManager.GetString("INVALID_PIX_KEY_TYPE", resourceCulture);
             }
         }
         

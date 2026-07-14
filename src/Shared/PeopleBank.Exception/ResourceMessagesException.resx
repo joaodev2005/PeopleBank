@@ -117,11 +117,20 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ACCOUNT_ALREADY_EXISTS" xml:space="preserve">
+    <value>Employee already has an account.</value>
+  </data>
   <data name="ACCOUNT_NOT_FOUND" xml:space="preserve">
     <value> Account not found.</value>
   </data>
+  <data name="COMPANY_ALREADY_EXISTS" xml:space="preserve">
+    <value>This company already exists.</value>
+  </data>
   <data name="COMPANY_NOT_FOUND" xml:space="preserve">
     <value>Company not found.</value>
+  </data>
+  <data name="CPF_ALREADY_EXISTS" xml:space="preserve">
+    <value>This cpf already exists</value>
   </data>
   <data name="EMPLOYEE_NOT_FOUND" xml:space="preserve">
     <value>Employee not found</value>
@@ -137,6 +146,9 @@
   </data>
   <data name="INVALID_EMAIL" xml:space="preserve">
     <value>Invalid e-mail address</value>
+  </data>
+  <data name="INVALID_PIX_KEY_TYPE" xml:space="preserve">
+    <value>Invalid Pix key type.</value>
   </data>
   <data name="PIX_KEY_ALREADY_EXISTS" xml:space="preserve">
     <value>This Pix key is already used.</value>
