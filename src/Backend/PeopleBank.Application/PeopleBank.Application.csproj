@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Mapster" Version="10.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\Shared\PeopleBank.Communication\PeopleBank.Communication.csproj" />
     <ProjectReference Include="..\..\Shared\PeopleBank.Exception\PeopleBank.Exception.csproj" />
     <ProjectReference Include="..\PeopleBank.Domain\PeopleBank.Domain.csproj" />

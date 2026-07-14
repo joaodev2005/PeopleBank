@@ -26,7 +26,7 @@ public class Account
 
     private Account() { }
 
-    internal Account(Guid employeeId, string pixKey, PixKeyType pixKeyType)
+    public Account(Guid employeeId, string pixKey, PixKeyType pixKeyType)
     {
         Id = Guid.NewGuid();
         EmployeeId = employeeId;

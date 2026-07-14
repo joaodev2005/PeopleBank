@@ -14,7 +14,7 @@ public class Employee
     public Email Email { get; private set; }
     public decimal Salary { get; private set; }
     public PixKeyType PixKeyType { get; private set; }
-    public string PixKey { get; private set; } 
+    public string PixKey { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public bool Active { get; private set; }
 
@@ -47,8 +47,8 @@ public class Employee
     {
         Id = Guid.NewGuid();
         Name = name;
-        Cpf = new Cpf(cpf);           
-        Email = new Email(email);     
+        Cpf = new Cpf(cpf);
+        Email = new Email(email);
         Salary = salary;
         PixKeyType = pixKeyType;
         PixKey = pixKey;
@@ -86,7 +86,7 @@ public class Employee
         Active = true;
     }
 
-    internal void AssignAccount(Account account)
+    public void AssignAccount(Account account)
     {
         Account = account;
     }
