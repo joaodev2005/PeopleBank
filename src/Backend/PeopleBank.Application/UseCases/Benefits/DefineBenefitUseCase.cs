@@ -31,10 +31,6 @@ public class DefineBenefitUseCase : IDefineBenefitUseCase
         if (company is null)
             throw new NotFoundException(ResourceMessagesException.COMPANY_NOT_FOUND);
 
-        if (request.MonthlyAmount <= 0)
-            throw new ErrorOnValidationException(
-                new List<string> { "Monthly amount must be greater than zero." });
-
         var benefitDefinition = new BenefitDefinition(
             request.CompanyId,
             request.Name,
@@ -45,6 +41,14 @@ public class DefineBenefitUseCase : IDefineBenefitUseCase
         await _benefitDefinitionRepository.AddAsync(benefitDefinition);
         await _unitOfWork.SaveChangesAsync();
 
-        return benefitDefinition.Adapt<ResponseBenefitJson>();
+        return new ResponseBenefitJson
+        {
+            Id = benefitDefinition.Id,
+            CompanyId = benefitDefinition.CompanyId,
+            Name = benefitDefinition.Name,
+            Category = benefitDefinition.Category.ToString(),
+            MonthlyAmount = benefitDefinition.MonthlyAmount,
+            Active = benefitDefinition.Active
+        };
     }
 }

@@ -15,7 +15,8 @@ public class CompanyRepository : ICompanyRepository
         await _context.Companies.FirstOrDefaultAsync(c => c.Id == id);
 
     public async Task<Company?> GetByCnpjAsync(string cnpj) =>
-        await _context.Companies.FirstOrDefaultAsync(c => c.Cnpj.Value == cnpj);
+    (await _context.Companies.ToListAsync())
+        .FirstOrDefault(c => c.Cnpj.Value == cnpj);
 
     public async Task AddAsync(Company company) =>
         await _context.Companies.AddAsync(company);

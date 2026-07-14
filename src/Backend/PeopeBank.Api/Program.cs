@@ -1,3 +1,4 @@
+using PeopleBank.Api.Middleware;
 using PeopleBank.Application;
 using PeopleBank.Infrastructure;
 using PeopleBank.Infrastructure.Migrations;
@@ -12,6 +13,8 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
+
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {

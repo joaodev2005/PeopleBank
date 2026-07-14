@@ -47,6 +47,8 @@ public static class DependencyInjectionExtension
         services.AddScoped<ITimeEntryRepository, TimeEntryRepository>();
         services.AddScoped<IPayrollRepository, PayrollRepository>();
         services.AddScoped<IBenefitDefinitionRepository, BenefitDefinitionRepository>();
+        services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+        services.AddScoped<IPositionRepository, PositionRepository>();
     }
 
     private static void AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)

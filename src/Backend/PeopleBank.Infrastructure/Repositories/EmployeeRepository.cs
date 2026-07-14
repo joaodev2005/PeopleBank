@@ -20,7 +20,8 @@ public class EmployeeRepository : IEmployeeRepository
             .FirstOrDefaultAsync(e => e.Id == id);
 
     public async Task<Employee?> GetByCpfAsync(string cpf) =>
-        await _context.Employees.FirstOrDefaultAsync(e => e.Cpf.Value == cpf);
+    (await _context.Employees.ToListAsync())
+        .FirstOrDefault(e => e.Cpf.Value == cpf);
 
     public async Task<IEnumerable<Employee>> GetByCompanyAsync(Guid companyId) =>
         await _context.Employees.Where(e => e.CompanyId == companyId && e.Active).ToListAsync();

@@ -12,10 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Shared\PeopleBank.Communication\PeopleBank.Communication.csproj" />
     <ProjectReference Include="..\..\Shared\PeopleBank.Exception\PeopleBank.Exception.csproj" />
     <ProjectReference Include="..\PeopleBank.Application\PeopleBank.Application.csproj" />
