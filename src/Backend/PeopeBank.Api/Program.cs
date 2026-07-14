@@ -1,3 +1,5 @@
+using PeopleBank.Infrastructure.Migrations;
+
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -21,4 +23,13 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+await ExecuteMigrations();
+
 app.Run();
+
+async Task ExecuteMigrations()
+{
+    await using var scope = app.Services.CreateAsyncScope();
+
+    DatabaseMigration.ExecuteMigrations(scope.ServiceProvider);
+}
