@@ -44,7 +44,7 @@ O projeto foi estruturado seguindo os princípios da **Clean Architecture** comb
 
 | Categoria | Tecnologia |
 | :--- | :--- |
-| **Linguagem & Framework** | .NET 8 / .NET 9, ASP.NET Core, C# |
+| **Linguagem & Framework** | .NET 10, ASP.NET Core, C# |
 | **Persistência** | SQL Server + Entity Framework Core |
 | **Migrações** | FluentMigrator |
 | **Cache Distribuído** | Redis |
