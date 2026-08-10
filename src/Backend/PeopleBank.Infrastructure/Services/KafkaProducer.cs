@@ -27,6 +27,9 @@ public class KafkaProducer : IKafkaProducer, IDisposable
     public async Task PublishAsync<T>(string topic, string key, T message) where T : class
     {
         var json = JsonSerializer.Serialize(message);
+
+        Console.WriteLine($"Publicando no tópico {topic}: {json}");
+
         var kafkaMessage = new Message<string, string>
         {
             Key = key,

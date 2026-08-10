@@ -28,7 +28,7 @@ public class Payroll
         CreatedAt = DateTime.UtcNow;
     }
 
-    internal void AddPayslip(Payslip payslip)
+    public void AddPayslip(Payslip payslip)
     {
         _payslips.Add(payslip);
     }

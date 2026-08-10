@@ -1,5 +1,4 @@
-﻿using System.Transactions;
-using PeopleBank.Domain.Enums;
+﻿using PeopleBank.Domain.Enums;
 using PeopleBank.Exception;
 using PeopleBank.Exception.ExceptionBase;
 
@@ -69,13 +68,24 @@ public class Account
         Balance += amount;
     }
 
-    internal void AddTransaction(Transaction transaction)
+    public void AddTransaction(Transaction transaction)
     {
         _transactions.Add(transaction);
     }
 
-    internal void AddBenefitWallet(BenefitWallet wallet)
+    public void AddBenefitWallet(BenefitWallet wallet)
     {
         _benefitWallets.Add(wallet);
+    }
+
+    public void InternalDebit(decimal amount)
+    {
+        if (amount <= 0)
+            throw new DomainException("Debit amount must be greater than zero.");
+
+        if (Balance < amount)
+            throw new DomainException("Insufficient balance.");
+
+        Balance -= amount;
     }
 }

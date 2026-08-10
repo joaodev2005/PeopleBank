@@ -1,10 +1,15 @@
 <Solution>
+  <Folder Name="/Itens de Solução/">
+    <File Path="AGENTS.md" />
+    <File Path="docker-compose.yml" />
+  </Folder>
   <Folder Name="/src/" />
   <Folder Name="/src/Backend/">
     <Project Path="src/Backend/PeopeBank.Api/PeopeBank.Api.csproj" />
     <Project Path="src/Backend/PeopleBank.Application/PeopleBank.Application.csproj" Id="5e8a0c2e-e2f0-4dbf-b476-ae2c120fb70d" />
     <Project Path="src/Backend/PeopleBank.Domain/PeopleBank.Domain.csproj" Id="04d1fb0e-7322-4a6c-9454-0c7ed9b0684d" />
     <Project Path="src/Backend/PeopleBank.Infrastructure/PeopleBank.Infrastructure.csproj" Id="da7d5824-167b-4d5b-81ec-c6909ce2094f" />
+    <Project Path="src/Backend/PeopleBank.Worker/PeopleBank.Worker.csproj" Id="a31cb4f3-0246-4426-86c1-20c1cafa91eb" />
   </Folder>
   <Folder Name="/src/Shared/">
     <Project Path="src/Shared/PeopleBank.Communication/PeopleBank.Communication.csproj" Id="0a4d667a-2e8b-4d0c-a08d-6b82878cfffc" />
