@@ -1,5 +1,5 @@
-﻿using Confluent.Kafka;
-using System.Text.Json;
+﻿using System.Text.Json;
+using Confluent.Kafka;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

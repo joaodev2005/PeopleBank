@@ -37,4 +37,12 @@ public class BenefitWallet
 
         Balance -= amount;
     }
+
+    public void Credit(decimal amount)
+    {
+        if (amount <= 0)
+            throw new DomainException("Credit amount must be greater than zero.");
+
+        Balance += amount;
+    }
 }

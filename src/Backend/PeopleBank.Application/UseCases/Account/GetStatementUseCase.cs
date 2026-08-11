@@ -28,7 +28,16 @@ public class GetStatementUseCase : IGetStatementUseCase
 
         var transactionItems = transactions.Select(t =>
         {
-            bool isDebit = t.SourceAccountId == account.Id;
+            bool isDebit;
+            if (t.TargetAccountId == null)
+            {
+                isDebit = false;
+            }
+            else
+            {
+                isDebit = t.SourceAccountId == account.Id;
+            }
+
             return new TransactionItemJson
             {
                 TransactionId = t.Id,

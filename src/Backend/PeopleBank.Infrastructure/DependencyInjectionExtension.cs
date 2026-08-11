@@ -38,18 +38,19 @@ public static class DependencyInjectionExtension
         return services;
     }
 
-    private static void AddRepositories(this IServiceCollection services)
-    {
-        services.AddScoped<ICompanyRepository, CompanyRepository>();
-        services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-        services.AddScoped<IAccountRepository, AccountRepository>();
-        services.AddScoped<ITransactionRepository, TransactionRepository>();
-        services.AddScoped<ITimeEntryRepository, TimeEntryRepository>();
-        services.AddScoped<IPayrollRepository, PayrollRepository>();
-        services.AddScoped<IBenefitDefinitionRepository, BenefitDefinitionRepository>();
-        services.AddScoped<IDepartmentRepository, DepartmentRepository>();
-        services.AddScoped<IPositionRepository, PositionRepository>();
-    }
+private static void AddRepositories(this IServiceCollection services)
+        {
+            services.AddScoped<ICompanyRepository, CompanyRepository>();
+            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            services.AddScoped<IAccountRepository, AccountRepository>();
+            services.AddScoped<ITransactionRepository, TransactionRepository>();
+            services.AddScoped<ITimeEntryRepository, TimeEntryRepository>();
+            services.AddScoped<IPayrollRepository, PayrollRepository>();
+            services.AddScoped<IBenefitDefinitionRepository, BenefitDefinitionRepository>();
+            services.AddScoped<IBenefitWalletRepository, BenefitWalletRepository>();
+            services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            services.AddScoped<IPositionRepository, PositionRepository>();
+        }
 
     private static void AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {

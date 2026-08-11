@@ -1,7 +1,7 @@
-﻿using System.Collections;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Confluent.Kafka;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -9,12 +9,6 @@ using PeopleBank.Domain.Entities;
 using PeopleBank.Domain.Enums;
 using PeopleBank.Domain.Events;
 using PeopleBank.Infrastructure.Data;
-using StackExchange.Redis;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using static Azure.Core.HttpHeader;
-using static Confluent.Kafka.ConfigPropertyNames;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using static StackExchange.Redis.Role;
 
 namespace PeopleBank.Worker.Workers;
 
@@ -124,6 +118,61 @@ public class PayrollRequestedConsumer : BackgroundService
                         creditTransaction.MarkAsCompleted();
                         account.AddTransaction(creditTransaction);
                         transactionIds.Add(creditTransaction.Id);
+
+                        using (var benefitTransaction = await dbContext.Database.BeginTransactionAsync())
+                        {
+                            try
+                            {
+                                var activeBenefits = await dbContext.BenefitDefinitions
+                                    .Where(bd => bd.CompanyId == payrollEvent.CompanyId && bd.Active)
+                                    .ToListAsync();
+
+                                foreach (var benefitDef in activeBenefits)
+                                {
+                                    var idempotencyKey = $"ben-{payrollEvent.PayrollId:N}-{account.Id:N}-{benefitDef.Id:N}"
+                     .Substring(0, 100);
+                                    var existingTx = await dbContext.Transactions
+                                        .FirstOrDefaultAsync(t => t.IdempotencyKey == idempotencyKey);
+                                    if (existingTx != null) continue;
+
+                                    var existingWallet = account.BenefitWallets
+                                        .FirstOrDefault(w => w.BenefitDefinition.Category == benefitDef.Category
+                                                             && w.ExpirationDate > DateTime.UtcNow);
+
+                                    if (existingWallet == null)
+                                    {
+                                        var expirationDate = new DateTime(payrollEvent.Year, payrollEvent.Month, 1)
+                                            .AddMonths(2).AddDays(-1).AddHours(23).AddMinutes(59).AddSeconds(59);
+                                        existingWallet = new BenefitWallet(account.Id, benefitDef.Id,
+                                            benefitDef.MonthlyAmount, expirationDate);
+                                        account.AddBenefitWallet(existingWallet);
+                                        dbContext.BenefitWallets.Add(existingWallet);
+                                    }
+                                    else
+                                    {
+                                        existingWallet.Credit(benefitDef.MonthlyAmount);
+                                    }
+
+                                    var benefitTx = new Transaction(
+                                        account.Id,
+                                        null,
+                                        benefitDef.MonthlyAmount,
+                                        idempotencyKey,
+                                        $"Benefit: {benefitDef.Name}");
+                                    dbContext.Transactions.Add(benefitTx);
+                                    benefitTx.MarkAsCompleted();
+                                    account.AddTransaction(benefitTx);
+                                    transactionIds.Add(benefitTx.Id);
+                                }
+
+                                await benefitTransaction.CommitAsync();
+                            }
+                            catch
+                            {
+                                await benefitTransaction.RollbackAsync();
+                                throw;
+                            }
+                        }
 
                         totalPaid += netSalary;
                     }

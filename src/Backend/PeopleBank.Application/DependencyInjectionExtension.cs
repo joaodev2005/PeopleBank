@@ -30,6 +30,7 @@ public static class DependencyInjectionExtension
         services.AddScoped<IProcessPayrollUseCase, ProcessPayrollUseCase>();
         services.AddScoped<IRequestPixUseCase, RequestPixUseCase>();
         services.AddScoped<IDefineBenefitUseCase, DefineBenefitUseCase>();
+        services.AddScoped<ISpendBenefitUseCase, SpendBenefitUseCase>();
         services.AddScoped<ICreateDepartmentUseCase, CreateDepartmentUseCase>();
         services.AddScoped<ICreatePositionUseCase, CreatePositionUseCase>();
     }
