@@ -1,11 +1,13 @@
 ﻿using System.Text.Json;
 using Confluent.Kafka;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PeopleBank.Domain.Entities;
+using PeopleBank.Domain.Enums;
 using PeopleBank.Domain.Events;
-using PeopleBank.Domain.Interfaces.Repositories;
-using PeopleBank.Domain.Interfaces.Services;
+using PeopleBank.Infrastructure.Data;
 
 namespace PeopleBank.Worker.Workers;
 
@@ -33,9 +35,10 @@ public class PixRequestedConsumer : BackgroundService
 
             while (!stoppingToken.IsCancellationRequested)
             {
+                ConsumeResult<string, string>? result = null;
                 try
                 {
-                    var result = consumer.Consume(TimeSpan.FromSeconds(1));
+                    result = consumer.Consume(TimeSpan.FromSeconds(1));
                     if (result == null) continue;
 
                     _logger.LogInformation("Processando Pix no offset {Offset}", result.Offset);
@@ -47,35 +50,97 @@ public class PixRequestedConsumer : BackgroundService
                         continue;
                     }
 
-                    using var scope = _scopeFactory.CreateScope();
-                    var accountRepo = scope.ServiceProvider.GetRequiredService<IAccountRepository>();
-                    var transactionRepo = scope.ServiceProvider.GetRequiredService<ITransactionRepository>();
-                    var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-
-                    var sourceAccount = await accountRepo.GetByIdAsync(pixEvent.SourceAccountId);
-                    var targetAccount = await accountRepo.GetByIdAsync(pixEvent.TargetAccountId);
-
-                    if (sourceAccount == null || targetAccount == null)
+                    if (string.IsNullOrWhiteSpace(pixEvent.IdempotencyKey))
                     {
-                        _logger.LogWarning("Conta não encontrada para a transação {TransactionId}", pixEvent.TransactionId);
+                        _logger.LogWarning("IdempotencyKey ausente no evento Pix no offset {Offset}", result.Offset);
                         continue;
                     }
 
-                    sourceAccount.InternalDebit(pixEvent.Amount);
-                    targetAccount.Credit(pixEvent.Amount);
+                    using var scope = _scopeFactory.CreateScope();
+                    var dbContext = scope.ServiceProvider.GetRequiredService<PeopleBankDbContext>();
 
-                    var transaction = await transactionRepo.GetByIdempotencyKeyAsync(pixEvent.IdempotencyKey);
-                    if (transaction != null)
+                    using var transaction = await dbContext.Database.BeginTransactionAsync();
+                    try
                     {
-                        transaction.MarkAsCompleted();
+                        var existingTransaction = await dbContext.Transactions
+                            .FirstOrDefaultAsync(t => t.IdempotencyKey == pixEvent.IdempotencyKey && t.Status == TransactionStatus.Completed);
+
+                        if (existingTransaction != null)
+                        {
+                            _logger.LogInformation("Transação já processada (idempotência): {IdempotencyKey}", pixEvent.IdempotencyKey);
+                            await transaction.CommitAsync();
+                            consumer.Commit(result);
+                            continue;
+                        }
+
+                        var sourceAccount = await dbContext.Accounts
+                            .FirstOrDefaultAsync(a => a.Id == pixEvent.SourceAccountId);
+
+                        if (sourceAccount == null)
+                        {
+                            throw new InvalidOperationException("ACCOUNT_NOT_FOUND: Conta de origem não encontrada");
+                        }
+
+                        if (!sourceAccount.Active)
+                        {
+                            throw new InvalidOperationException("ACCOUNT_INACTIVE: Conta de origem inativa");
+                        }
+
+                        var targetAccount = await dbContext.Accounts
+                            .FirstOrDefaultAsync(a => a.Id == pixEvent.TargetAccountId);
+
+                        if (targetAccount == null)
+                        {
+                            throw new InvalidOperationException("ACCOUNT_NOT_FOUND: Conta de destino não encontrada");
+                        }
+
+                        if (!targetAccount.Active)
+                        {
+                            throw new InvalidOperationException("ACCOUNT_INACTIVE: Conta de destino inativa");
+                        }
+
+                        sourceAccount.InternalDebit(pixEvent.Amount);
+                        targetAccount.Credit(pixEvent.Amount);
+
+                        var newTransaction = new Transaction(
+                            pixEvent.SourceAccountId,
+                            pixEvent.TargetAccountId,
+                            pixEvent.Amount,
+                            pixEvent.IdempotencyKey,
+                            pixEvent.Description);
+
+                        newTransaction.MarkAsCompleted();
+                        dbContext.Transactions.Add(newTransaction);
+
+                        await dbContext.SaveChangesAsync();
+                        await transaction.CommitAsync();
+
+                        consumer.Commit(result);
+                        _logger.LogInformation("Pix efetivado: {TransactionId}, IdempotencyKey: {IdempotencyKey}", 
+                            newTransaction.Id, pixEvent.IdempotencyKey);
                     }
-
-                    await unitOfWork.SaveChangesAsync();
-
-                    consumer.Commit(result);
-                    _logger.LogInformation("Pix efetivado: {TransactionId}", pixEvent.TransactionId);
+                    catch
+                    {
+                        await transaction.RollbackAsync();
+                        throw;
+                    }
                 }
                 catch (OperationCanceledException) { break; }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    _logger.LogError(ex, "Erro de concorrência ao processar Pix");
+                    if (result != null) consumer.Commit(result);
+                }
+                catch (JsonException jsonEx)
+                {
+                    _logger.LogError(jsonEx, "JSON inválido no tópico pix-requested. Mensagem ignorada.");
+                    if (result != null) consumer.Commit(result);
+                }
+                catch (InvalidOperationException ex) when (ex.Message.Contains("ACCOUNT_NOT_FOUND") || ex.Message.Contains("ACCOUNT_INACTIVE") || ex.Message.Contains("Insufficient"))
+                {
+                    _logger.LogWarning(ex, "Erro de validação ao processar Pix: {Message}", ex.Message);
+                    if (result != null) consumer.Commit(result);
+                }
                 catch (System.Exception ex)
                 {
                     _logger.LogError(ex, "Erro ao processar Pix");
