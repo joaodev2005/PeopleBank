@@ -15,5 +15,10 @@
     <Project Path="src/Shared/PeopleBank.Communication/PeopleBank.Communication.csproj" Id="0a4d667a-2e8b-4d0c-a08d-6b82878cfffc" />
     <Project Path="src/Shared/PeopleBank.Exception/PeopleBank.Exception.csproj" Id="abb0f9f1-db28-4395-8bec-cf02d3215ed1" />
   </Folder>
-  <Folder Name="/tests/" />
+  <Folder Name="/tests/">
+    <Project Path="tests/CommonTestUtilities/CommonTestUtilities.csproj" Id="f09c444b-2a20-42f7-a283-e6ef526efee0" />
+    <Project Path="tests/UseCase.Tests/UseCase.Tests.csproj" Id="bc260385-4ab7-43cc-9d66-554d8c4e0f12" />
+    <Project Path="tests/Validator.Tests/Validator.Tests.csproj" Id="fe03c857-90f9-4983-a1c3-dfcbbadeb37a" />
+    <Project Path="tests/WebApi.Tests/WebApi.Tests.csproj" Id="777a0b67-b564-4b09-9557-f796811b4434" />
+  </Folder>
 </Solution>
