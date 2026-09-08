@@ -8,7 +8,7 @@ using PeopleBank.Domain.Interfaces.Repositories;
 using PeopleBank.Domain.Interfaces.Services;
 using PeopleBank.Exception.ExceptionBase;
 
-namespace PeopleBank.Application.UseCases.Benefits;
+namespace PeopleBank.Application.UseCases.Benefits.SpendBenefits;
 
 public class SpendBenefitUseCase : ISpendBenefitUseCase
 {

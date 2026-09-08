@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using PeopleBank.Application.UseCases.Account;
-using PeopleBank.Application.UseCases.Benefits;
+using PeopleBank.Application.UseCases.Account.GetStatement;
+using PeopleBank.Application.UseCases.Account.OpenAccount;
+using PeopleBank.Application.UseCases.Benefits.DefineBenefits;
+using PeopleBank.Application.UseCases.Benefits.SpendBenefits;
 using PeopleBank.Application.UseCases.Company;
 using PeopleBank.Application.UseCases.Department;
 using PeopleBank.Application.UseCases.Employee;

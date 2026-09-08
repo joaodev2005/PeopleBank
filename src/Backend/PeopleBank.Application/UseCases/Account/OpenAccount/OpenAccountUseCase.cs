@@ -8,7 +8,7 @@ using PeopleBank.Exception;
 using PeopleBank.Exception.ExceptionBase;
 
 
-namespace PeopleBank.Application.UseCases.Account;
+namespace PeopleBank.Application.UseCases.Account.OpenAccount;
 
 public class OpenAccountUseCase : IOpenAccountUseCase
 {

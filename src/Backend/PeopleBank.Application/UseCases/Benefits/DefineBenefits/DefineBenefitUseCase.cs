@@ -7,7 +7,7 @@ using PeopleBank.Domain.Interfaces.Services;
 using PeopleBank.Exception;
 using PeopleBank.Exception.ExceptionBase;
 
-namespace PeopleBank.Application.UseCases.Benefits;
+namespace PeopleBank.Application.UseCases.Benefits.DefineBenefits;
 
 public class DefineBenefitUseCase : IDefineBenefitUseCase
 {

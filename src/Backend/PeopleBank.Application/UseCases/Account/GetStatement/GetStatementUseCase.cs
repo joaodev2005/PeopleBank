@@ -3,7 +3,7 @@ using PeopleBank.Domain.Interfaces.Repositories;
 using PeopleBank.Exception;
 using PeopleBank.Exception.ExceptionBase;
 
-namespace PeopleBank.Application.UseCases.Account;
+namespace PeopleBank.Application.UseCases.Account.GetStatement;
 
 public class GetStatementUseCase : IGetStatementUseCase
 {
