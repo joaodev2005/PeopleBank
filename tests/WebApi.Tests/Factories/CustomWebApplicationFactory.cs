@@ -55,8 +55,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
                     options.UseSqlServer(sqlConnection));
 
                 var redisDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IConnectionMultiplexer));
-                if (redisDescriptor != null)
-                    services.Remove(redisDescriptor);
+                if (redisDescriptor != null) services.Remove(redisDescriptor);
 
                 var mockRedis = new Mock<IConnectionMultiplexer>();
                 var mockDb = new Mock<IDatabase>();
@@ -71,8 +70,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
                 services.AddSingleton(mockRedis.Object);
 
                 var kafkaDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IKafkaProducer));
-                if (kafkaDescriptor != null)
-                    services.Remove(kafkaDescriptor);
+                if (kafkaDescriptor != null) services.Remove(kafkaDescriptor);
 
                 var mockKafka = new Mock<IKafkaProducer>();
                 services.AddSingleton(mockKafka.Object);
