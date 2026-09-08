@@ -1,56 +1,180 @@
-# 🏦 PeopleBank - RH Integrado com Conta Digital
+# 🏦 PeopleBank
 
-> **⚠️ Status do Projeto: Em Desenvolvimento Ativo (Fase 1 - Modelagem e Arquitetura)**  
-> *A estrutura completa do projeto, camadas, injeção de dependência e modelagem de domínio (DDD) já estão definidas. A implementação dos casos de uso e integrações (Kafka/Redis) está em andamento. Este repositório serve como meu laboratório prático para arquitetura de sistemas financeiros distribuídos.*
+[![.NET CI](https://github.com/joaodev2005/PeopleBank/actions/workflows/ci.yml/badge.svg)](https://github.com/joaodev2005/PeopleBank/actions/workflows/ci.yml)
 
----
+**Sistema integrado de RH e Conta Digital**  
+Projeto pessoal desenvolvido para demonstrar uma arquitetura corporativa completa com **.NET 10**, **Clean Architecture**, **DDD** e processamento assíncrono.
 
-## 📋 Visão Geral
-
-O **PeopleBank** é um sistema de gestão de recursos humanos (RH) totalmente integrado a uma conta digital. O objetivo é automatizar desde a admissão do funcionário até o pagamento de salários e benefícios, utilizando conceitos de **Domain-Driven Design (DDD)**, **Clean Architecture** e processamento assíncrono.
-
-O fluxo principal do sistema cobre três grandes jornadas:
-
-1. **Onboarding do Funcionário**  
-   - Empresa se cadastra → RH cadastra funcionário (com CPF e chave Pix) → Sistema abre conta digital automaticamente (saldo R$ 0,00).
-
-2. **Folha de Pagamento (Payroll)**  
-   - Funcionário bate ponto (entrada/saída) → Sistema acumula horas → RH dispara processamento mensal → **Worker assíncrono (Kafka)** calcula salários, descontos, extras e benefícios → Valor líquido é depositado via Pix interno na conta do funcionário.
-
-3. **Benefícios Flexíveis**  
-   - Empresa define categorias (VR, VA, Mobilidade) → Funcionário recebe saldo separado mensalmente → Utiliza saldo via Pix em estabelecimentos credenciados (com validação de categoria).
+> 💡 O PeopleBank une gestão de pessoas (empresas, funcionários, ponto eletrônico) com serviços financeiros (conta digital, Pix, folha de pagamento e benefícios flexíveis) em uma única plataforma.
 
 ---
 
-## 🏗️ Arquitetura do Projeto
+## ✨ Funcionalidades
 
-O projeto foi estruturado seguindo os princípios da **Clean Architecture** combinados com **DDD** e **SOLID**. A comunicação entre camadas é feita exclusivamente via **Injeção de Dependência** (sem MediatR, utilizando interfaces de Use Case diretamente).
-
-### As 7 Camadas do Sistema
-
-| Camada | Responsabilidade |
-| :--- | :--- |
-| **Domain** | Entidades, Value Objects (CPF, Email, PixKey), Enums, Interfaces de Repositórios/Serviços e Eventos de Domínio. |
-| **Application** | Casos de Uso (Use Cases), Validadores (FluentValidation) e Orquestração de fluxos. |
-| **Infrastructure** | Persistência (EF Core + SQL Server), Mensageria (Kafka), Cache (Redis), Repositórios concretos e Migrations. |
-| **API** | Controllers, Middleware Global de Exceções e configuração de DI. |
-| **Worker** | Background Service dedicado ao processamento assíncrono da folha de pagamento. |
-| **Communication** | DTOs isolados (Requests/Responses) para contratos limpos entre API e cliente. |
-| **Exception** | Exceções customizadas (DomainException, NotFoundException, etc.) e padronização de erros. |
+- **Onboarding de funcionários** com abertura automática de conta digital
+- **Registro de ponto** com cálculo de horas extras
+- **Processamento de folha de pagamento** assíncrono (Kafka + Worker Service)
+- **Transferências Pix** com idempotência e bloqueio de saldo (Redis)
+- **Benefícios flexíveis** (VR, VA) com carteiras virtuais e regras de estabelecimento
+- **Extrato bancário** unificado de salário, benefícios e Pix
 
 ---
 
-## ⚙️ Stack Tecnológica (Utilizada e Planejada)
+## 🏗️ Arquitetura
 
-| Categoria | Tecnologia |
-| :--- | :--- |
-| **Linguagem & Framework** | .NET 10, ASP.NET Core, C# |
-| **Persistência** | SQL Server + Entity Framework Core |
-| **Migrações** | FluentMigrator |
-| **Cache Distribuído** | Redis |
-| **Mensageria** | Apache Kafka (processamento assíncrono da folha) |
-| **Resiliência** | Polly (Retry/Circuit Breaker no Worker) |
-| **Validação** | FluentValidation |
-| **Testes** | xUnit, Moq, Bogus, FluentAssertions, Testcontainers |
-| **Infraestrutura** | Docker, Docker Compose |
-| **Documentação** | Swagger/OpenAPI (ambiente Dev) |
+O projeto segue os princípios de **Clean Architecture** e **Domain-Driven Design (DDD)**, com 7 projetos bem definidos:
+
+| Camada             | Responsabilidade                                                                 |
+|--------------------|----------------------------------------------------------------------------------|
+| **Domain**         | Entidades, Value Objects, Enums, Interfaces de repositório e eventos de domínio |
+| **Application**    | Casos de uso, validações (FluentValidation) e orquestração                       |
+| **Infrastructure** | Persistência (EF Core, FluentMigrator), Redis, Kafka e repositórios concretos  |
+| **API**            | Controllers, middleware global de exceções e configuração                       |
+| **Worker**         | Serviço em background que consome eventos do Kafka                              |
+| **Communication**  | DTOs de Request e Response                                                       |
+| **Exception**      | Exceções customizadas e mensagens de erro padronizadas (RFC 7807)               |
+
+### 🔄 Fluxo de processamento (exemplo: folha de pagamento)
+
+```plaintext
+[API] --publica evento--> [Kafka] --consome--> [Worker]
+                                                  │
+                                                  ├── Calcula horas extras
+                                                  ├── Credita salário na conta digital
+                                                  ├── Credita benefícios (VR/VA)
+                                                  └── Marca folha como Processada
+```
+
+---
+
+## 🧰 Stack Tecnológica
+
+- **.NET 10** (ASP.NET Core)
+- **Entity Framework Core** (SQL Server)
+- **FluentMigrator** (migrações)
+- **Apache Kafka** (mensageria assíncrona)
+- **Redis** (cache, idempotência e bloqueio de saldo)
+- **Polly** (resiliência)
+- **Mapster** (mapeamento de objetos)
+- **FluentValidation** (validação de requests)
+- **Docker** (infraestrutura local)
+- **xUnit, Moq, FluentAssertions, Bogus, Testcontainers** (testes)
+
+---
+
+## 📦 Como rodar o projeto localmente
+
+### Pré-requisitos
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+
+### 1. Subir a infraestrutura (SQL Server, Redis, Kafka)
+
+```bash
+docker-compose up -d
+```
+
+### 2. Rodar a API
+
+```bash
+cd src/Backend/PeopleBank.Api
+dotnet run
+```
+
+A API estará disponível em `https://localhost:7130` (Swagger em `/swagger`).
+
+### 3. Rodar o Worker (em outro terminal)
+
+```bash
+cd src/Backend/PeopleBank.Worker
+dotnet run
+```
+
+O Worker consumirá eventos dos tópicos `employee-created`, `payroll-requested` e `pix-requested`.
+
+### 4. Criar o banco de dados (se necessário)
+
+```bash
+docker exec -it peoplebank-sqlserver-1 /opt/mssql-tools18/bin/sqlcmd \
+  -S localhost -U sa -P "DevPass123!" -C -Q "CREATE DATABASE PeopleBank"
+```
+
+As migrações são executadas automaticamente ao iniciar a API.
+
+---
+
+## 🧪 Executando os testes
+
+```bash
+dotnet test
+```
+
+### Testes de integração
+
+Os testes de integração usam **Testcontainers** (SQL Server real em container).  
+Certifique-se de que o Docker Desktop esteja rodando.
+
+```bash
+dotnet test tests/PeopleBank.WebApi.Tests
+```
+
+---
+
+## 📚 Principais endpoints
+
+| Método | Rota                           | Descrição                                |
+|--------|--------------------------------|------------------------------------------|
+| POST   | `/api/companies`               | Cadastrar empresa                        |
+| POST   | `/api/employees`               | Cadastrar funcionário (abre conta)       |
+| POST   | `/api/accounts`                | Abrir conta digital manualmente          |
+| GET    | `/api/accounts/{id}/statement` | Consultar extrato                        |
+| POST   | `/api/time-entries`            | Registrar ponto (ClockIn/ClockOut)       |
+| POST   | `/api/payroll/process`         | Processar folha de pagamento             |
+| POST   | `/api/pix`                     | Solicitar transferência Pix              |
+| POST   | `/api/benefits/definitions`    | Cadastrar benefício (VR, VA)             |
+| POST   | `/api/benefits/spend`          | Gastar saldo de benefício                |
+
+> 🔍 Acesse o Swagger para ver todos os endpoints e schemas: `https://localhost:7130/swagger`
+
+---
+
+## 📁 Estrutura de Pastas
+
+```plaintext
+PeopleBank/
+├── src/
+│   ├── Backend/
+│   │   ├── PeopleBank.Domain/
+│   │   ├── PeopleBank.Application/
+│   │   ├── PeopleBank.Infrastructure/
+│   │   ├── PeopleBank.Api/
+│   │   └── PeopleBank.Worker/
+│   └── Shared/
+│       ├── PeopleBank.Communication/
+│       └── PeopleBank.Exception/
+├── tests/
+│   ├── PeopleBank.Domain.Tests/
+│   ├── PeopleBank.UseCase.Tests/
+│   ├── PeopleBank.Validator.Tests/
+│   ├── PeopleBank.WebApi.Tests/
+│   └── PeopleBank.CommonTestUtilities/
+└── docker-compose.yml
+```
+
+---
+
+## 🧠 Decisões de design
+
+- **DDD tático** – Agregados, Value Objects e Eventos de Domínio
+- **CQRS simples** – Casos de uso separados por operação
+- **Mensageria** – Kafka para desacoplamento entre API e Worker
+- **Idempotência** – Redis + chave única para evitar duplicidade
+- **Resiliência** – Polly para retry e circuit breaker no Worker
+- **Testabilidade** – Suíte completa com testes unitários, de validação e integração
+
+---
+
+## 📜 Licença
+
+Este projeto é apenas para fins educacionais e de portfólio.
