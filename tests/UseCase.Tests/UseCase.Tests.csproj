@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Backend\PeopleBank.Application\PeopleBank.Application.csproj" />
+    <ProjectReference Include="..\..\src\Backend\PeopleBank.Worker\PeopleBank.Worker.csproj" />
     <ProjectReference Include="..\CommonTestUtilities\CommonTestUtilities.csproj" />
   </ItemGroup>
 
