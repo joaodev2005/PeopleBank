@@ -3,7 +3,7 @@ using Confluent.Kafka;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using PeopleBank.Application.UseCases.Account;
+using PeopleBank.Application.UseCases.Account.OpenAccount;
 using PeopleBank.Communication.Requests;
 using PeopleBank.Domain.Events;
 
