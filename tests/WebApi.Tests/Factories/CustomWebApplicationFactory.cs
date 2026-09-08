@@ -86,7 +86,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
         serviceCollection.AddFluentMigratorCore()
             .ConfigureRunner(rb => rb
                 .AddSqlServer()
-                .WithGlobalConnectionString(GetSqlConnectionString())
+                .WithGlobalConnectionString(GetSqlConnectionString()) 
                 .ScanIn(Assembly.Load("PeopleBank.Infrastructure")).For.Migrations());
 
         using var provider = serviceCollection.BuildServiceProvider();
