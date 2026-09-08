@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PeopleBank.Communication.Requests;
 using PeopleBank.Communication.Responses;
-using PeopleBank.Application.UseCases.Account;
+using PeopleBank.Application.UseCases.Account.GetStatement;
+using PeopleBank.Application.UseCases.Account.OpenAccount;
 
 namespace PeopleBank.Api.Controllers;
 

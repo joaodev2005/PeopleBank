@@ -14,6 +14,11 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
+if (!builder.Configuration.GetValue<bool>("SkipMigrations"))
+{
+    await ExecuteMigrations();
+}
+
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())
@@ -40,3 +45,5 @@ async Task ExecuteMigrations()
 
     DatabaseMigration.ExecuteMigrations(scope.ServiceProvider);
 }
+
+public partial class Program { } 

@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PeopleBank.Communication.Requests;
 using PeopleBank.Communication.Responses;
-using PeopleBank.Application.UseCases.Benefits;
+using PeopleBank.Application.UseCases.Benefits.DefineBenefits;
+using PeopleBank.Application.UseCases.Benefits.SpendBenefits;
 
 namespace PeopleBank.Api.Controllers;
 
