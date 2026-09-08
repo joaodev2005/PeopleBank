@@ -2,9 +2,9 @@
 
 public enum BenefitCategory
 {
-    Meal = 1,       // VR
-    Food = 2,       // VA
-    Mobility = 3,   // Transporte
-    Health = 4,     // Plano de saúde
+    Meal = 1,      
+    Food = 2,      
+    Mobility = 3,   
+    Health = 4,     
     Other = 99
 }
