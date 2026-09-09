@@ -35,7 +35,12 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-await ExecuteMigrations();
+//await ExecuteMigrations();
+
+if (!builder.Configuration.GetValue<bool>("SkipMigrations"))
+{
+    await ExecuteMigrations();
+}
 
 app.Run();
 

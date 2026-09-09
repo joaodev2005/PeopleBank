@@ -1,4 +1,5 @@
 using System.Reflection;
+using DotNet.Testcontainers.Builders;
 using FluentMigrator.Runner;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -56,22 +57,16 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
 
                 var redisDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IConnectionMultiplexer));
                 if (redisDescriptor != null) services.Remove(redisDescriptor);
-
                 var mockRedis = new Mock<IConnectionMultiplexer>();
                 var mockDb = new Mock<IDatabase>();
-                mockDb.Setup(d => d.LockTakeAsync(
-                        It.IsAny<RedisKey>(),
-                        It.IsAny<RedisValue>(),
-                        It.IsAny<TimeSpan>(),
-                        It.IsAny<CommandFlags>()))
-                    .ReturnsAsync(true);
+                mockDb.Setup(d => d.LockTakeAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), It.IsAny<TimeSpan>(), It.IsAny<CommandFlags>()))
+                      .ReturnsAsync(true);
                 mockRedis.Setup(r => r.GetDatabase(It.IsAny<int>(), It.IsAny<object>()))
-                    .Returns(mockDb.Object);
+                         .Returns(mockDb.Object);
                 services.AddSingleton(mockRedis.Object);
 
                 var kafkaDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IKafkaProducer));
                 if (kafkaDescriptor != null) services.Remove(kafkaDescriptor);
-
                 var mockKafka = new Mock<IKafkaProducer>();
                 services.AddSingleton(mockKafka.Object);
             });
@@ -86,7 +81,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
         serviceCollection.AddFluentMigratorCore()
             .ConfigureRunner(rb => rb
                 .AddSqlServer()
-                .WithGlobalConnectionString(GetSqlConnectionString()) 
+                .WithGlobalConnectionString(GetSqlConnectionString())
                 .ScanIn(Assembly.Load("PeopleBank.Infrastructure")).For.Migrations());
 
         using var provider = serviceCollection.BuildServiceProvider();
